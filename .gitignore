@@ -1,0 +1,50 @@
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+.pytest_cache/
+.mypy_cache/
+
+# Node
+node_modules/
+.next/
+out/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+.coverage.*
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Docker
+*.log
+
+# Local databases / uploads
+*.sqlite
+*.sqlite3
+media/
+uploads/
+
+# Build artifacts
+dist/
+build/

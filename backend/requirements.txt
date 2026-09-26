@@ -1,0 +1,17 @@
+
+fastapi==0.128.2
+uvicorn[standard]==0.40.0
+sqlalchemy==2.0.50
+psycopg[binary]==3.3.3
+pydantic[email]==2.13.4
+PyJWT==2.13.0
+httpx==0.28.1
+redis==7.4.0
+celery==5.6.2
+python-multipart==0.0.22
+pytest==8.4.2
+pytest-asyncio==1.1.0
+alembic==1.16.5
+Pillow==11.3.0
+boto3==1.40.34
+sentry-sdk[fastapi]==2.38.0

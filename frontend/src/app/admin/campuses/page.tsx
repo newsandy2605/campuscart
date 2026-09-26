@@ -1,0 +1,19 @@
+
+'use client';
+import { useEffect, useState } from 'react';
+import AppShell from '../../../components/AppShell';
+import { createAdminCampus, getAdminCampuses, getStoredUser, updateAdminCampus, type Campus } from '../../../lib/api';
+
+export default function AdminCampuses() {
+  const [items,setItems]=useState<Campus[]>([]);
+  const [error,setError]=useState('');
+  const [message,setMessage]=useState('');
+  const [form,setForm]=useState({name:'',slug:'',city:'',state:'',pincode:'',email_domains:'',description:'',current_semester:'Current semester'});
+  const admin=getStoredUser()?.role==='admin';
+  const load=async()=>{try{setItems(await getAdminCampuses())}catch(e){setError(e instanceof Error?e.message:'Unable to load campuses')}};
+  useEffect(()=>{if(admin)void load()},[admin]);
+  const create=async()=>{setError('');setMessage('');try{await createAdminCampus({...form,email_domains:form.email_domains.split(',').map(x=>x.trim()).filter(Boolean)});setForm({name:'',slug:'',city:'',state:'',pincode:'',email_domains:'',description:'',current_semester:'Current semester'});setMessage('Campus added. It is now available in onboarding.');await load()}catch(e){setError(e instanceof Error?e.message:'Unable to create campus')}};
+  const toggle=async(c:Campus)=>{setError('');try{await updateAdminCampus(c.id,{active:!c.active});await load()}catch(e){setError(e instanceof Error?e.message:'Unable to update campus')}};
+  if(!admin)return <AppShell active="Profile"><div className="error-box">Admin access required.</div></AppShell>;
+  return <AppShell active="Admin"><div className="page-header"><div><div className="eyebrow">ADMIN</div><h1>Campus directory</h1><p className="muted" style={{fontSize:13}}>Add and maintain campuses available during student onboarding. This is separate from student OTP verification.</p></div></div><div className="dashboard-grid"><section className="panel"><div className="panel-head"><div><div className="eyebrow">ADD CAMPUS</div><h2>New campus</h2></div></div><label>Campus name<input value={form.name} onChange={e=>setForm({...form,name:e.target.value})} placeholder="University / college name"/></label><label>Slug<input value={form.slug} onChange={e=>setForm({...form,slug:e.target.value})} placeholder="example-university"/></label><label>City<input value={form.city} onChange={e=>setForm({...form,city:e.target.value})} placeholder="Pune"/></label><label>State<input value={form.state} onChange={e=>setForm({...form,state:e.target.value})} placeholder="Maharashtra"/></label><label>Pincode<input value={form.pincode} onChange={e=>setForm({...form,pincode:e.target.value})} placeholder="411001"/></label><label>Approved domains <span className="muted">(optional, comma-separated)</span><input value={form.email_domains} onChange={e=>setForm({...form,email_domains:e.target.value})} placeholder="college.edu, college.ac.in"/></label><label>Current semester<input value={form.current_semester} onChange={e=>setForm({...form,current_semester:e.target.value})} placeholder="Semester 5"/></label><label>Description<textarea value={form.description} onChange={e=>setForm({...form,description:e.target.value})} rows={3}/></label><button className="btn btn-primary" onClick={create}>Create campus</button>{message&&<div className="success-box">{message}</div>}{error&&<div className="error-box">{error}</div>}</section><section className="panel"><div className="panel-head"><div><div className="eyebrow">DIRECTORY</div><h2>{items.length} campuses</h2></div></div><div className="campus-options">{items.map(c=><div className="campus-option" key={c.id}><span><strong>{c.name}</strong><small>{c.city}, {c.state} · {(c.email_domains||[]).join(', ')||'No institutional domains'}</small></span><button className="btn btn-ghost" onClick={()=>toggle(c)}>{c.active===false?'Activate':'Deactivate'}</button></div>)}</div></section></div></AppShell>;
+}
